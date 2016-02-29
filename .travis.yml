@@ -1,1 +1,9 @@
 language: go
+
+before_install:
+  - go get github.com/golang/go/tree/master/src/cmd/cover  
+script:
+  - go get github.com/axw/gocov/gocov
+  - go get github.com/mattn/goveralls
+  - export PATH=$PATH:$HOME/gopath/bin/
+  - goveralls -repotoken CAMtsMCP5xATW2Gav1kuPOTefCmfjHsUX
