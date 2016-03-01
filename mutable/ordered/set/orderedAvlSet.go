@@ -1,10 +1,4 @@
-//ordered sets
-//avl tree
-//int
-
 package templates
-
-import ()
 
 type OrderedSet interface {
 	Add(val int) bool
