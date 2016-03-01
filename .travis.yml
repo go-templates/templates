@@ -8,6 +8,7 @@ script:
   - go get github.com/axw/gocov/gocov
   - go get github.com/mattn/goveralls
   - export PATH=$PATH:$HOME/gopath/bin/
-  - go test ./... -coverprofile=coverage.out
+  - go get github.com/go-playground/overalls
+    #- go test ./... -coverprofile=coverage.out
   - overalls -project=github.com/go-templates/templates -covermode=count -debug
   - goveralls -coverprofile=overalls.coverprofile -repotoken=CAMtsMCP5xATW2Gav1kuPOTefCmfjHsUX
