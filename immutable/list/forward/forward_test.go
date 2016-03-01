@@ -35,3 +35,9 @@ func (s *ForwardSuite) TestRange(c *C) {
 		}
 	}
 }
+
+func (s *ForwardSuite) TestEmptyIter(c *C) {
+	l := NewForwardList()
+	c.Assert(l.Iter().Value(), Equals, 0)
+	c.Assert(l.Iter().Next(), Equals, false)
+}

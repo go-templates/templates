@@ -34,7 +34,8 @@ func (f *forwardList) Iter() *forwardListIterator {
 }
 
 func (f *forwardListIterator) Next() bool {
-	if f.cur.next == nil {
+	if f.cur == nil || f.cur.next == nil {
+		f.cur = nil
 		return false
 	}
 	if f.idx == 0 {
