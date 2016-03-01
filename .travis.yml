@@ -9,4 +9,5 @@ script:
   - go get github.com/mattn/goveralls
   - export PATH=$PATH:$HOME/gopath/bin/
   - go test ./... -coverprofile=coverage.out
-  - goveralls -coverprofile=coverage.out -repotoken=CAMtsMCP5xATW2Gav1kuPOTefCmfjHsUX
+  - overalls -project=github.com/go-templates/templates -covermode=count -debug
+  - goveralls -coverprofile=overalls.coverprofile -repotoken=CAMtsMCP5xATW2Gav1kuPOTefCmfjHsUX
