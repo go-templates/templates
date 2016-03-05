@@ -60,9 +60,9 @@ func (currentNode *treeNode) add(val int) bool {
 			added = currentNode.right.add(val)
 			if currentNode.right.height-getHeight(currentNode.left) == 2 {
 				if currentNode.right.value < val {
-					currentNode.singleRotateLeft()
+					currentNode = currentNode.singleRotateLeft()
 				} else {
-					currentNode.doubleRotateLeft()
+					currentNode = currentNode.doubleRotateLeft()
 				}
 			}
 		}
@@ -74,9 +74,9 @@ func (currentNode *treeNode) add(val int) bool {
 			added = currentNode.left.add(val)
 			if currentNode.left.height-getHeight(currentNode.right) == 2 {
 				if currentNode.left.value > val {
-					currentNode.singleRotateRight()
+					currentNode = currentNode.singleRotateRight()
 				} else {
-					currentNode.doubleRotateRight()
+					currentNode = currentNode.doubleRotateRight()
 				}
 			}
 		}
@@ -100,9 +100,27 @@ func getHeight(node *treeNode) int {
 	}
 	return node.height
 }
-func (currentNode *treeNode) singleRotateRight() {}
-func (currentNode *treeNode) doubleRotateRight() {
-
+func (currentNode *treeNode) singleRotateRight() *treeNode {
+	newNode := currentNode.left
+	currentNode.left = nil
+	newNode.right = currentNode
+	currentNode.height = max(getHeight(currentNode.left), getHeight(currentNode.right)) + 1
+	newNode.height = max(getHeight(newNode.left), currentNode.height) + 1
+	return newNode
 }
-func (currentNode *treeNode) singleRotateLeft() {}
-func (currentNode *treeNode) doubleRotateLeft() {}
+func (currentNode *treeNode) doubleRotateRight() *treeNode {
+	currentNode.left = currentNode.left.singleRotateLeft()
+	return currentNode.singleRotateRight()
+}
+func (currentNode *treeNode) singleRotateLeft() *treeNode {
+	newNode := currentNode.right
+	currentNode.right = nil
+	newNode.left = currentNode
+	currentNode.height = max(getHeight(currentNode.left), getHeight(currentNode.right)) + 1
+	newNode.height = max(getHeight(newNode.right), currentNode.height) + 1
+	return newNode
+}
+func (currentNode *treeNode) doubleRotateLeft() *treeNode {
+	currentNode.right = currentNode.right.singleRotateRight()
+	return currentNode.singleRotateLeft()
+}
