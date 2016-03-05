@@ -58,6 +58,19 @@ func (s *ForwardSuite) TestGet(c *C) {
 	c.Assert(el, Equals, 42)
 }
 
+func (s *ForwardSuite) TestGetAfterLast(c *C) {
+	l := NewForwardList()
+	l = l.Prepend(23)
+	_, ok := l.Get(1)
+	c.Assert(ok, Equals, false)
+}
+
+func (s *ForwardSuite) TestGetAfterLastEmpty(c *C) {
+	l := NewForwardList()
+	_, ok := l.Get(1)
+	c.Assert(ok, Equals, false)
+}
+
 func (s *ForwardSuite) BenchmarkPrepend(c *C) {
 	l := NewForwardList()
 	for i := 0; i < c.N; i++ {

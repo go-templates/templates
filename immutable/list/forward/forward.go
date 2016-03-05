@@ -56,7 +56,7 @@ func (f *forwardListIterator) Value() int {
 
 func (f *forwardList) Get(idx int) (int, bool) {
 	for i := 0; i < idx; i++ {
-		if f.next == nil {
+		if f == nil || f.next == nil {
 			return 0, false
 		}
 		f = f.next
