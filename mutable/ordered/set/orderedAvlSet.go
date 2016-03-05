@@ -13,9 +13,10 @@ type orderedAvlSet struct {
 }
 
 type treeNode struct {
-	left  *treeNode
-	right *treeNode
-	value int
+	left   *treeNode
+	right  *treeNode
+	value  int
+	height int
 }
 
 func NewOrderedSet() *orderedAvlSet {
@@ -43,12 +44,65 @@ func (o *orderedAvlSet) Contains(val int) bool {
 func (o *orderedAvlSet) Add(val int) bool {
 	currentNode := o.root
 	if currentNode == nil {
-		o.root = &treeNode{left: nil, right: nil, value: val}
+		o.root = &treeNode{left: nil, right: nil, value: val, height: 1}
 		return true
 	}
-	return false
+	return currentNode.add(val)
 }
 
+func (currentNode *treeNode) add(val int) bool {
+	added := false
+	if currentNode.value < val {
+		if currentNode.right == nil {
+			currentNode.right = &treeNode{left: nil, right: nil, value: val, height: 1}
+			added = true
+		} else {
+			added = currentNode.right.add(val)
+			if currentNode.right.height-getHeight(currentNode.left) == 2 {
+				if currentNode.right.value < val {
+					currentNode.singleRotateLeft()
+				} else {
+					currentNode.doubleRotateLeft()
+				}
+			}
+		}
+	} else if currentNode.value > val {
+		if currentNode.left == nil {
+			currentNode.left = &treeNode{left: nil, right: nil, value: val, height: 1}
+			added = true
+		} else {
+			added = currentNode.left.add(val)
+			if currentNode.left.height-getHeight(currentNode.right) == 2 {
+				if currentNode.left.value > val {
+					currentNode.singleRotateRight()
+				} else {
+					currentNode.doubleRotateRight()
+				}
+			}
+		}
+	}
+	currentNode.height = max(getHeight(currentNode.left), getHeight(currentNode.right)) + 1
+	return added
+}
 func (o *orderedAvlSet) Remove(val int) bool {
 	return false
 }
+
+func max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
+}
+func getHeight(node *treeNode) int {
+	if node == nil {
+		return 0
+	}
+	return node.height
+}
+func (currentNode *treeNode) singleRotateRight() {}
+func (currentNode *treeNode) doubleRotateRight() {
+
+}
+func (currentNode *treeNode) singleRotateLeft() {}
+func (currentNode *treeNode) doubleRotateLeft() {}
