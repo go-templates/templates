@@ -33,4 +33,8 @@ func (s *orderedAvlSetSuite) TestAddMany(c *C) {
 	c.Assert(set.Contains(32), Equals, true)
 	c.Assert(set.Contains(55), Equals, true)
 	c.Assert(set.Contains(42), Equals, true)
+	c.Assert(set.Add(5), Equals, true)
+	c.Assert(set.Add(9), Equals, true)
+	c.Assert(set.Add(8), Equals, true)
+	c.Assert(set.Add(50), Equals, true)
 }
