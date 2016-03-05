@@ -3,6 +3,7 @@ package forward
 type ForwardList interface {
 	Prepend(val int) ForwardList
 	First() int
+	Get(idx int) int
 	Iter() ForwardListIterator
 }
 
@@ -51,4 +52,14 @@ func (f *forwardListIterator) Value() int {
 		return 0
 	}
 	return f.cur.value
+}
+
+func (f *forwardList) Get(idx int) (int, bool) {
+	for i := 0; i < idx; i++ {
+		if f.next == nil {
+			return 0, false
+		}
+		f = f.next
+	}
+	return f.value, true
 }
