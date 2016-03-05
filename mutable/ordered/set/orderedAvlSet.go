@@ -42,22 +42,26 @@ func (o *orderedAvlSet) Contains(val int) bool {
 }
 
 func (o *orderedAvlSet) Add(val int) bool {
-	currentNode := o.root
-	if currentNode == nil {
+	if o.root == nil {
 		o.root = &treeNode{left: nil, right: nil, value: val, height: 1}
 		return true
 	}
-	return currentNode.add(val)
+	added := false
+	o.root, added = o.root.add(val)
+	if added {
+		o.size++
+	}
+	return added
 }
 
-func (currentNode *treeNode) add(val int) bool {
+func (currentNode *treeNode) add(val int) (*treeNode, bool) {
 	added := false
 	if currentNode.value < val {
 		if currentNode.right == nil {
 			currentNode.right = &treeNode{left: nil, right: nil, value: val, height: 1}
 			added = true
 		} else {
-			added = currentNode.right.add(val)
+			_, added = currentNode.right.add(val)
 			if currentNode.right.height-getHeight(currentNode.left) == 2 {
 				if currentNode.right.value < val {
 					currentNode = currentNode.singleRotateLeft()
@@ -71,7 +75,7 @@ func (currentNode *treeNode) add(val int) bool {
 			currentNode.left = &treeNode{left: nil, right: nil, value: val, height: 1}
 			added = true
 		} else {
-			added = currentNode.left.add(val)
+			_, added = currentNode.left.add(val)
 			if currentNode.left.height-getHeight(currentNode.right) == 2 {
 				if currentNode.left.value > val {
 					currentNode = currentNode.singleRotateRight()
@@ -82,7 +86,7 @@ func (currentNode *treeNode) add(val int) bool {
 		}
 	}
 	currentNode.height = max(getHeight(currentNode.left), getHeight(currentNode.right)) + 1
-	return added
+	return currentNode, added
 }
 func (o *orderedAvlSet) Remove(val int) bool {
 	return false
