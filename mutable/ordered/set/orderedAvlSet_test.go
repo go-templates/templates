@@ -207,3 +207,13 @@ func (s *orderedAvlSetSuite) TestDoubleRotateRightAfterRemove(c *C) {
 	c.Assert(set.root.left.height, Equals, 1)
 	c.Assert(set.root.right.height, Equals, 1)
 }
+
+func (s *orderedAvlSetSuite) TestFindMax(c *C) {
+	set := NewOrderedSet()
+	set.Add(12)
+	set.Add(9)
+	set.Add(18)
+	set.Add(7)
+	set.Add(10)
+	c.Assert(findMax(set.root), Equals, 18)
+}
