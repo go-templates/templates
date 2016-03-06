@@ -100,7 +100,21 @@ func (currentNode *treeNode) add(val int) (*treeNode, bool) {
 	//	fmt.Println("returning ", currentNode)
 	return currentNode, added
 }
-func (o *orderedAvlSet) Remove(val int) bool {
+
+func (currentNode *treeNode) Remove(val int) (*treeNode, bool) {
+	removed := false
+	if currentNode.value == nil {
+		return removed
+	}
+	if currentNode.value == val {
+
+	}
+	if currentNode.value < val {
+		currentNode.right, removed = currentNode.right.remove(val)
+	}
+	if currentNode.value > val {
+		currentNode.left, removed = currentNode.left.remove(val)
+	}
 	return false
 }
 
