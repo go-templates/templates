@@ -57,6 +57,19 @@ func (s *orderedAvlSetSuite) TestRotateRight(c *C) {
 	c.Assert(set.root.right.height, Equals, 1)
 }
 
+func (s *orderedAvlSetSuite) TestRotateLeft(c *C) {
+	set := NewOrderedSet()
+	set.Add(5)
+	set.Add(8)
+	set.Add(9)
+	c.Assert(set.root.height, Equals, 2)
+	c.Assert(set.root.value, Equals, 8)
+	c.Assert(set.root.left.value, Equals, 5)
+	c.Assert(set.root.right.value, Equals, 9)
+	c.Assert(set.root.left.height, Equals, 1)
+	c.Assert(set.root.right.height, Equals, 1)
+}
+
 func (s *orderedAvlSetSuite) TestDoubleRotateLeft(c *C) {
 	set := NewOrderedSet()
 	set.Add(5)
