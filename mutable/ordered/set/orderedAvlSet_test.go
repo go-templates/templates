@@ -143,3 +143,67 @@ func (s *orderedAvlSetSuite) TestRemoveRootTwoChild(c *C) {
 	c.Assert(set.root.height, Equals, 2)
 	c.Assert(set.root.right.value, Equals, 6)
 }
+
+func (s *orderedAvlSetSuite) TestSingleRotateLeftAfterRemove(c *C) {
+	set := NewOrderedSet()
+	set.Add(12)
+	set.Add(9)
+	set.Add(15)
+	set.Add(13)
+	set.Add(14)
+	c.Assert(set.Remove(9), Equals, true)
+	c.Assert(set.root.value, Equals, 14)
+	c.Assert(set.root.left.value, Equals, 12)
+	c.Assert(set.root.right.value, Equals, 15)
+	c.Assert(set.root.height, Equals, 3)
+	c.Assert(set.root.left.height, Equals, 2)
+	c.Assert(set.root.right.height, Equals, 1)
+	c.Assert(set.root.left.right.value, Equals, 13)
+}
+
+func (s *orderedAvlSetSuite) TestDoubleRotateLeftAfterRemove(c *C) {
+	set := NewOrderedSet()
+	set.Add(12)
+	set.Add(9)
+	set.Add(13)
+	set.Add(14)
+	c.Assert(set.Remove(9), Equals, true)
+	c.Assert(set.root.value, Equals, 13)
+	c.Assert(set.root.left.value, Equals, 12)
+	c.Assert(set.root.right.value, Equals, 14)
+	c.Assert(set.root.height, Equals, 2)
+	c.Assert(set.root.left.height, Equals, 1)
+	c.Assert(set.root.right.height, Equals, 1)
+}
+
+func (s *orderedAvlSetSuite) TestSingleRotateRightAfterRemove(c *C) {
+	set := NewOrderedSet()
+	set.Add(18)
+	set.Add(20)
+	set.Add(15)
+	set.Add(13)
+	set.Add(14)
+	c.Assert(set.Remove(20), Equals, true)
+	c.Assert(set.root.value, Equals, 14)
+	c.Assert(set.root.left.value, Equals, 13)
+	c.Assert(set.root.right.value, Equals, 18)
+	c.Assert(set.root.height, Equals, 3)
+	c.Assert(set.root.left.height, Equals, 1)
+	c.Assert(set.root.right.height, Equals, 2)
+	c.Assert(set.root.right.left.value, Equals, 15)
+}
+
+func (s *orderedAvlSetSuite) TestDoubleRotateRightAfterRemove(c *C) {
+	set := NewOrderedSet()
+	set.Add(18)
+	set.Add(20)
+	set.Add(15)
+	set.Add(17)
+	c.Assert(set.Remove(20), Equals, true)
+	c.Assert(set.root.value, Equals, 17)
+	c.Assert(set.root.left.value, Equals, 15)
+	c.Assert(set.root.right.value, Equals, 18)
+	c.Assert(set.root.height, Equals, 2)
+	c.Assert(set.root.left.height, Equals, 1)
+	c.Assert(set.root.right.height, Equals, 1)
+}

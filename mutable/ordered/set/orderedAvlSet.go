@@ -122,23 +122,23 @@ func (currentNode *treeNode) remove(val int) (*treeNode, bool) {
 			removed = true
 			return currentNode, removed
 		}
-		if getHeight(currentNode.right)-getHeight(currentNode.left) == 2 {
-			if currentNode.right.right.height >= currentNode.right.left.height {
-				currentNode = currentNode.singleRotateLeft()
-			} else {
-				currentNode = currentNode.doubleRotateLeft()
-			}
-		} else if getHeight(currentNode.left)-getHeight(currentNode.right) == 2 {
-			if currentNode.left.left.height >= currentNode.left.right.height {
-				currentNode = currentNode.singleRotateRight()
-			} else {
-				currentNode = currentNode.doubleRotateRight()
-			}
-		}
 	} else if currentNode.value < val {
 		currentNode.right, removed = currentNode.right.remove(val)
 	} else if currentNode.value > val {
 		currentNode.left, removed = currentNode.left.remove(val)
+	}
+	if getHeight(currentNode.right)-getHeight(currentNode.left) == 2 {
+		if getHeight(currentNode.right.right) >= getHeight(currentNode.right.left) {
+			currentNode = currentNode.singleRotateLeft()
+		} else {
+			currentNode = currentNode.doubleRotateLeft()
+		}
+	} else if getHeight(currentNode.left)-getHeight(currentNode.right) == 2 {
+		if getHeight(currentNode.left.left) >= getHeight(currentNode.left.right) {
+			currentNode = currentNode.singleRotateRight()
+		} else {
+			currentNode = currentNode.doubleRotateRight()
+		}
 	}
 	currentNode.height = max(getHeight(currentNode.left), getHeight(currentNode.right)) + 1
 	return currentNode, removed
@@ -165,7 +165,7 @@ func getHeight(node *treeNode) int {
 }
 func (currentNode *treeNode) singleRotateRight() *treeNode {
 	newNode := currentNode.left
-	currentNode.left = nil
+	currentNode.left = newNode.right
 	newNode.right = currentNode
 	currentNode.height = max(getHeight(currentNode.left), getHeight(currentNode.right)) + 1
 	newNode.height = max(getHeight(newNode.left), currentNode.height) + 1
@@ -177,7 +177,7 @@ func (currentNode *treeNode) doubleRotateRight() *treeNode {
 }
 func (currentNode *treeNode) singleRotateLeft() *treeNode {
 	newNode := currentNode.right
-	currentNode.right = nil
+	currentNode.right = newNode.left
 	newNode.left = currentNode
 	currentNode.height = max(getHeight(currentNode.left), getHeight(currentNode.right)) + 1
 	newNode.height = max(getHeight(newNode.right), currentNode.height) + 1
