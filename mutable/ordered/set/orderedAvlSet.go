@@ -59,23 +59,17 @@ func (o *orderedAvlSet) Add(val int) bool {
 
 func (currentNode *treeNode) add(val int) (*treeNode, bool) {
 	added := false
-	//tempNode := currentNode
 	if currentNode.value < val {
 		if currentNode.right == nil {
 			currentNode.right = &treeNode{left: nil, right: nil, value: val, height: 1}
 			added = true
 		} else {
 			currentNode.right, added = currentNode.right.add(val)
-			//			fmt.Println("currentNode is ", currentNode)
-			//			fmt.Println("currentNode left ", currentNode.left)
-			//			fmt.Println("currentNode right ", currentNode.right)
 			if currentNode.right.height-getHeight(currentNode.left) == 2 {
 				if currentNode.right.value < val {
 					currentNode = currentNode.singleRotateLeft()
-					//					fmt.Println("singleRotateLeft currentNode.value: ", currentNode.value)
 				} else {
 					currentNode = currentNode.doubleRotateLeft()
-					//					fmt.Println("doubleRotateLeft currentNode.value: ", currentNode.value)
 				}
 			}
 		}
@@ -88,34 +82,73 @@ func (currentNode *treeNode) add(val int) (*treeNode, bool) {
 			if currentNode.left.height-getHeight(currentNode.right) == 2 {
 				if currentNode.left.value > val {
 					currentNode = currentNode.singleRotateRight()
-					//					fmt.Println("singleRotateRight currentNode.value: ", currentNode.value)
 				} else {
 					currentNode = currentNode.doubleRotateRight()
-					//					fmt.Println("doubleRotateRight currentNode.value: ", currentNode.value)
 				}
 			}
 		}
 	}
 	currentNode.height = max(getHeight(currentNode.left), getHeight(currentNode.right)) + 1
-	//	fmt.Println("returning ", currentNode)
 	return currentNode, added
 }
 
-func (currentNode *treeNode) Remove(val int) (*treeNode, bool) {
+func (o *orderedAvlSet) Remove(val int) bool {
 	removed := false
-	if currentNode.value == nil {
+	if o.root == nil {
 		return removed
+	} else {
+		o.root, removed = o.root.remove(val)
 	}
-	if currentNode.value == val {
+	if removed {
+		o.size--
+	}
+	return removed
+}
 
-	}
-	if currentNode.value < val {
+func (currentNode *treeNode) remove(val int) (*treeNode, bool) {
+	removed := false
+	if currentNode.value == val {
+		if currentNode.left != nil && currentNode.right != nil {
+			currentNode.value = findMax(currentNode.left)
+			currentNode.left, removed = currentNode.left.remove(currentNode.value)
+		} else if currentNode.left != nil {
+			currentNode = currentNode.left
+			removed = true
+		} else if currentNode.right != nil {
+			currentNode = currentNode.right
+			removed = true
+		} else if currentNode.right == nil && currentNode.left == nil {
+			currentNode = nil
+			removed = true
+			return currentNode, removed
+		}
+		if getHeight(currentNode.right)-getHeight(currentNode.left) == 2 {
+			if currentNode.right.right.height >= currentNode.right.left.height {
+				currentNode = currentNode.singleRotateLeft()
+			} else {
+				currentNode = currentNode.doubleRotateLeft()
+			}
+		} else if getHeight(currentNode.left)-getHeight(currentNode.right) == 2 {
+			if currentNode.left.left.height >= currentNode.left.right.height {
+				currentNode = currentNode.singleRotateRight()
+			} else {
+				currentNode = currentNode.doubleRotateRight()
+			}
+		}
+	} else if currentNode.value < val {
 		currentNode.right, removed = currentNode.right.remove(val)
-	}
-	if currentNode.value > val {
+	} else if currentNode.value > val {
 		currentNode.left, removed = currentNode.left.remove(val)
 	}
-	return false
+	currentNode.height = max(getHeight(currentNode.left), getHeight(currentNode.right)) + 1
+	return currentNode, removed
+}
+
+func findMax(currentNode *treeNode) int {
+	if currentNode.right != nil {
+		return findMax(currentNode.right)
+	}
+	return currentNode.value
 }
 
 func max(a, b int) int {

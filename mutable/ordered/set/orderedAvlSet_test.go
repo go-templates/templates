@@ -113,3 +113,33 @@ func (s *orderedAvlSetSuite) TestRemoveNonExisting(c *C) {
 	set := NewOrderedSet()
 	c.Assert(set.Remove(5), Equals, false)
 }
+
+func (s *orderedAvlSetSuite) TestRemoveOnlyRoot(c *C) {
+	set := NewOrderedSet()
+	set.Add(5)
+	c.Assert(set.Remove(5), Equals, true)
+}
+
+func (s *orderedAvlSetSuite) TestRemoveRootOneChild(c *C) {
+	set := NewOrderedSet()
+	set.Add(5)
+	set.Add(4)
+	c.Assert(set.Remove(5), Equals, true)
+	c.Assert(set.root.value, Equals, 4)
+	c.Assert(set.root.height, Equals, 1)
+	set.Add(6)
+	c.Assert(set.Remove(4), Equals, true)
+	c.Assert(set.root.value, Equals, 6)
+	c.Assert(set.root.height, Equals, 1)
+}
+
+func (s *orderedAvlSetSuite) TestRemoveRootTwoChild(c *C) {
+	set := NewOrderedSet()
+	set.Add(5)
+	set.Add(4)
+	set.Add(6)
+	c.Assert(set.Remove(5), Equals, true)
+	c.Assert(set.root.value, Equals, 4)
+	c.Assert(set.root.height, Equals, 2)
+	c.Assert(set.root.right.value, Equals, 6)
+}
