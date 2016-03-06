@@ -217,3 +217,23 @@ func (s *orderedAvlSetSuite) TestFindMax(c *C) {
 	set.Add(10)
 	c.Assert(findMax(set.root), Equals, 18)
 }
+
+func (s *orderedAvlSetSuite) TestIterator(c *C) {
+	set := NewOrderedSet()
+	set.Add(5)
+	set.Add(3)
+	set.Add(8)
+	set.Add(1)
+	set.Add(4)
+	iter := set.Iter()
+	c.Assert(iter.Value(), Equals, 1)
+	c.Assert(iter.Next(), Equals, true)
+	c.Assert(iter.Value(), Equals, 3)
+	c.Assert(iter.Next(), Equals, true)
+	c.Assert(iter.Value(), Equals, 4)
+	c.Assert(iter.Next(), Equals, true)
+	c.Assert(iter.Value(), Equals, 5)
+	c.Assert(iter.Next(), Equals, true)
+	c.Assert(iter.Value(), Equals, 8)
+	c.Assert(iter.Next(), Equals, false)
+}

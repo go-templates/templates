@@ -1,12 +1,18 @@
 package templates
 
-//import "fmt"
+//import "gopkg.in/templates.v1/mutable/stack"
 
 type OrderedSet interface {
 	Add(val int) bool
 	Remove(val int) bool
 	Contains(val int) bool
 	Size() int
+	Iter() OrderedSetIterator
+}
+
+type OrderedSetIterator interface {
+	Value() int
+	Next() bool
 }
 
 type orderedAvlSet struct {
@@ -19,6 +25,47 @@ type treeNode struct {
 	right  *treeNode
 	value  int
 	height int
+}
+
+type orderedAvlSetIterator struct {
+	history     treeNodeStack
+	currentNode *treeNode
+}
+
+func (o *orderedAvlSet) Iter() orderedAvlSetIterator {
+	iter := orderedAvlSetIterator{}
+	iter.currentNode = o.root
+	if iter.currentNode != nil {
+		for iter.currentNode.left != nil {
+			iter.history.Push(iter.currentNode)
+			iter.currentNode = iter.currentNode.left
+		}
+	}
+	return iter
+}
+
+func (iter *orderedAvlSetIterator) Value() int {
+	if iter.currentNode == nil {
+		return 0
+	}
+	return iter.currentNode.value
+}
+
+func (iter *orderedAvlSetIterator) Next() bool {
+	if iter.currentNode != nil {
+		if iter.currentNode.right != nil {
+			for iter.currentNode.left != nil {
+				iter.currentNode = iter.currentNode.left
+			}
+		} else {
+			iter.currentNode, _ = iter.history.Pop()
+			if iter.currentNode == nil {
+				return false
+			}
+		}
+		return true
+	}
+	return false
 }
 
 func NewOrderedSet() *orderedAvlSet {
@@ -65,13 +112,6 @@ func (currentNode *treeNode) add(val int) (*treeNode, bool) {
 			added = true
 		} else {
 			currentNode.right, added = currentNode.right.add(val)
-			if currentNode.right.height-getHeight(currentNode.left) == 2 {
-				if currentNode.right.value < val {
-					currentNode = currentNode.singleRotateLeft()
-				} else {
-					currentNode = currentNode.doubleRotateLeft()
-				}
-			}
 		}
 	} else if currentNode.value > val {
 		if currentNode.left == nil {
@@ -79,16 +119,9 @@ func (currentNode *treeNode) add(val int) (*treeNode, bool) {
 			added = true
 		} else {
 			currentNode.left, added = currentNode.left.add(val)
-			if currentNode.left.height-getHeight(currentNode.right) == 2 {
-				if currentNode.left.value > val {
-					currentNode = currentNode.singleRotateRight()
-				} else {
-					currentNode = currentNode.doubleRotateRight()
-				}
-			}
 		}
 	}
-	currentNode.height = max(getHeight(currentNode.left), getHeight(currentNode.right)) + 1
+	currentNode = currentNode.balance()
 	return currentNode, added
 }
 
@@ -127,20 +160,7 @@ func (currentNode *treeNode) remove(val int) (*treeNode, bool) {
 	} else if currentNode.value > val {
 		currentNode.left, removed = currentNode.left.remove(val)
 	}
-	if getHeight(currentNode.right)-getHeight(currentNode.left) == 2 {
-		if getHeight(currentNode.right.right) >= getHeight(currentNode.right.left) {
-			currentNode = currentNode.singleRotateLeft()
-		} else {
-			currentNode = currentNode.doubleRotateLeft()
-		}
-	} else if getHeight(currentNode.left)-getHeight(currentNode.right) == 2 {
-		if getHeight(currentNode.left.left) >= getHeight(currentNode.left.right) {
-			currentNode = currentNode.singleRotateRight()
-		} else {
-			currentNode = currentNode.doubleRotateRight()
-		}
-	}
-	currentNode.height = max(getHeight(currentNode.left), getHeight(currentNode.right)) + 1
+	currentNode = currentNode.balance()
 	return currentNode, removed
 }
 
@@ -157,12 +177,31 @@ func max(a, b int) int {
 	}
 	return b
 }
+
 func getHeight(node *treeNode) int {
 	if node == nil {
 		return 0
 	}
 	return node.height
 }
+func (currentNode *treeNode) balance() *treeNode {
+	if getHeight(currentNode.right)-getHeight(currentNode.left) == 2 {
+		if getHeight(currentNode.right.right) >= getHeight(currentNode.right.left) {
+			currentNode = currentNode.singleRotateLeft()
+		} else {
+			currentNode = currentNode.doubleRotateLeft()
+		}
+	} else if getHeight(currentNode.left)-getHeight(currentNode.right) == 2 {
+		if getHeight(currentNode.left.left) >= getHeight(currentNode.left.right) {
+			currentNode = currentNode.singleRotateRight()
+		} else {
+			currentNode = currentNode.doubleRotateRight()
+		}
+	}
+	currentNode.height = max(getHeight(currentNode.left), getHeight(currentNode.right)) + 1
+	return currentNode
+}
+
 func (currentNode *treeNode) singleRotateRight() *treeNode {
 	newNode := currentNode.left
 	currentNode.left = newNode.right
@@ -171,10 +210,12 @@ func (currentNode *treeNode) singleRotateRight() *treeNode {
 	newNode.height = max(getHeight(newNode.left), currentNode.height) + 1
 	return newNode
 }
+
 func (currentNode *treeNode) doubleRotateRight() *treeNode {
 	currentNode.left = currentNode.left.singleRotateLeft()
 	return currentNode.singleRotateRight()
 }
+
 func (currentNode *treeNode) singleRotateLeft() *treeNode {
 	newNode := currentNode.right
 	currentNode.right = newNode.left
@@ -183,6 +224,7 @@ func (currentNode *treeNode) singleRotateLeft() *treeNode {
 	newNode.height = max(getHeight(newNode.right), currentNode.height) + 1
 	return newNode
 }
+
 func (currentNode *treeNode) doubleRotateLeft() *treeNode {
 	currentNode.right = currentNode.right.singleRotateRight()
 	return currentNode.singleRotateLeft()
