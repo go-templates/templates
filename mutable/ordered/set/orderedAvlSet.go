@@ -1,5 +1,7 @@
 package templates
 
+//import "fmt"
+
 type OrderedSet interface {
 	Add(val int) bool
 	Remove(val int) bool
@@ -44,6 +46,7 @@ func (o *orderedAvlSet) Contains(val int) bool {
 func (o *orderedAvlSet) Add(val int) bool {
 	if o.root == nil {
 		o.root = &treeNode{left: nil, right: nil, value: val, height: 1}
+		o.size = 1
 		return true
 	}
 	added := false
@@ -56,17 +59,23 @@ func (o *orderedAvlSet) Add(val int) bool {
 
 func (currentNode *treeNode) add(val int) (*treeNode, bool) {
 	added := false
+	//tempNode := currentNode
 	if currentNode.value < val {
 		if currentNode.right == nil {
 			currentNode.right = &treeNode{left: nil, right: nil, value: val, height: 1}
 			added = true
 		} else {
-			_, added = currentNode.right.add(val)
+			currentNode.right, added = currentNode.right.add(val)
+			//			fmt.Println("currentNode is ", currentNode)
+			//			fmt.Println("currentNode left ", currentNode.left)
+			//			fmt.Println("currentNode right ", currentNode.right)
 			if currentNode.right.height-getHeight(currentNode.left) == 2 {
 				if currentNode.right.value < val {
 					currentNode = currentNode.singleRotateLeft()
+					//					fmt.Println("singleRotateLeft currentNode.value: ", currentNode.value)
 				} else {
 					currentNode = currentNode.doubleRotateLeft()
+					//					fmt.Println("doubleRotateLeft currentNode.value: ", currentNode.value)
 				}
 			}
 		}
@@ -75,17 +84,20 @@ func (currentNode *treeNode) add(val int) (*treeNode, bool) {
 			currentNode.left = &treeNode{left: nil, right: nil, value: val, height: 1}
 			added = true
 		} else {
-			_, added = currentNode.left.add(val)
+			currentNode.left, added = currentNode.left.add(val)
 			if currentNode.left.height-getHeight(currentNode.right) == 2 {
 				if currentNode.left.value > val {
 					currentNode = currentNode.singleRotateRight()
+					//					fmt.Println("singleRotateRight currentNode.value: ", currentNode.value)
 				} else {
 					currentNode = currentNode.doubleRotateRight()
+					//					fmt.Println("doubleRotateRight currentNode.value: ", currentNode.value)
 				}
 			}
 		}
 	}
 	currentNode.height = max(getHeight(currentNode.left), getHeight(currentNode.right)) + 1
+	//	fmt.Println("returning ", currentNode)
 	return currentNode, added
 }
 func (o *orderedAvlSet) Remove(val int) bool {
