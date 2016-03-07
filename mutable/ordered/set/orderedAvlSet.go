@@ -1,7 +1,5 @@
 package templates
 
-//import "gopkg.in/templates.v1/mutable/stack"
-
 type OrderedSet interface {
 	Add(val int) bool
 	Remove(val int) bool
@@ -54,6 +52,7 @@ func (iter *orderedAvlSetIterator) Value() int {
 func (iter *orderedAvlSetIterator) Next() bool {
 	if iter.currentNode != nil {
 		if iter.currentNode.right != nil {
+			iter.currentNode = iter.currentNode.right
 			for iter.currentNode.left != nil {
 				iter.currentNode = iter.currentNode.left
 			}
